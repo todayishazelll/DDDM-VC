@@ -1,3 +1,4 @@
+import time
 import torch
 from torchinfo import summary
 from model.vc_dddm_mixup import DDDM, SynthesizerTrn
@@ -37,5 +38,13 @@ x_lengths = torch.randint(1, max_length, input_shapes["x_lengths"])
 
 n_timesteps = 6  
 
+start_time = time.time()
+
 summary(model, input_data=(x, w2v_x, f0_x, x_lengths, n_timesteps), device="cpu")
 
+# End timing
+end_time = time.time()
+
+# Calculate and print elapsed time
+elapsed_time = end_time - start_time
+print(f"Running time: {elapsed_time:.4f} seconds")
