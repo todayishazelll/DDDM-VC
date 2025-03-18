@@ -10,8 +10,8 @@ hparams = {
         "n_mel_channels": 80,  # Example value, replace with your actual value
     },
     "diffusion": {
-        "dec_dim": 256,        # Example value, replace with your actual value
-        "spk_dim": 256,        # Example value, replace with your actual value
+        "dec_dim": 128,        # Example value, replace with your actual value
+        "spk_dim": 128,        # Example value, replace with your actual value
         "beta_min": 0.05,      # Example value, replace with your actual value
         "beta_max": 20.0,      # Example value, replace with your actual value
     }
