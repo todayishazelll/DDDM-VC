@@ -1,7 +1,5 @@
 import torch
 from model.diffusion import Diffusion
-
-import torch
 from fvcore.nn import FlopCountAnalysis
 
 # Hardcode the hyperparameters (replace these with your actual values)
