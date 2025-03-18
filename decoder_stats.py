@@ -1,5 +1,4 @@
 import torch
-from model.diffusion import Diffusion
 from fvcore.nn import FlopCountAnalysis
 
 # Hardcode the hyperparameters (replace these with your actual values)
@@ -33,16 +32,6 @@ def get_size_mb(tensor):
 def get_total_params(model):
     return sum(p.numel() for p in model.parameters())
 
-# Function to calculate total mult-adds (approximation)
-def get_total_mult_adds(model, input_size):
-    total_mult_adds = 0
-    for layer in model.children():
-        if isinstance(layer, torch.nn.Conv2d):
-            _, _, h, w = input_size
-            total_mult_adds += layer.kernel_size[0] * layer.kernel_size[1] * layer.in_channels * layer.out_channels * h * w
-        elif isinstance(layer, torch.nn.Linear):
-            total_mult_adds += layer.in_features * layer.out_features
-    return total_mult_adds
 
 # Input tensor (example)
 batch_size = 1
@@ -60,14 +49,13 @@ src_out = torch.randn(batch_size, dim_unet, seq_length).to(input_tensor.device)
 ftr_out = torch.randn(batch_size, dim_unet, seq_length).to(input_tensor.device)
 spk = torch.randn(batch_size, dim_spk).to(input_tensor.device)  # Speaker embedding
 n_timesteps = torch.tensor(50).to(input_tensor.device)  # Example timestep value
-mode = "train"  # Mode string, passed as an argument
+mode = "ml"  # Mode string, passed as an argument
 
 # Compute FLOPs using fvcore
 flops = FlopCountAnalysis(diffusion_model, (input_tensor, z_ftr, mask, src_out, ftr_out, spk, n_timesteps, mode))
 
 # Calculate metrics
 total_params = get_total_params(diffusion_model)
-total_mult_adds = flops.total()  # FLOPs count
 input_size_mb = get_size_mb(input_tensor)
 
 # Params size in MB
@@ -83,7 +71,6 @@ estimated_total_size_mb = input_size_mb + forward_backward_size_mb + params_size
 # Print the metrics
 print("Summary of the Diffusion Module:")
 print(f"Total Parameters: {total_params}")
-print(f"Total Mult-Adds (M/G): {total_mult_adds / 1e6:.2f} M ({total_mult_adds / 1e9:.2f} G)")
 print(f"Input Size (MB): {input_size_mb:.2f} MB")
 print(f"Forward/Backward Pass Size (MB): {forward_backward_size_mb:.2f} MB")
 print(f"Params Size (MB): {params_size_mb:.2f} MB")
